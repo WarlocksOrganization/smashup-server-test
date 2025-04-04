@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  unity-server:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: smashup-server-image-test # Build the image once and reuse it
+
+  unity-server-1:
+    image: smashup-server-image-test
+    container_name: smashup-server-1
+    network_mode: "host"
+    depends_on:
+      - unity-server
+    ports:
+      - "40050:40050/udp"
+    command: ["-port=40050", "-socketServerIP=host.docker.internal", "-socketServerPort=8082", "-logServerIP=localhost", "-logServerPort=8081"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  unity-server-2:
+    image: smashup-server-image-test
+    container_name: smashup-server-2
+    network_mode: "host"
+    depends_on:
+      - unity-server
+    ports:
+      - "40051:40051/udp"
+    command: ["-port=40051", "-socketServerIP=host.docker.internal", "-socketServerPort=8082", "-logServerIP=localhost", "-logServerPort=8081"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

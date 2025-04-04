@@ -1,0 +1,45 @@
+FROM ubuntu:20.04
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV UNITY_SERVER_BUILD_PATH=/app/SmashUpServer
+ENV SERVER_EXECUTABLE=smashup_server.x86_64
+
+# Install necessary dependencies
+RUN apt-get update && apt-get install -y \
+    libglib2.0-0 \
+    libnss3 \
+    libx11-6 \
+    libxcursor1 \
+    libxrandr2 \
+    libxss1 \
+    libxtst6 \
+    libasound2 \
+    libpulse0 \
+    libc6 \
+    libstdc++6 \
+    libgcc1 \
+    libgconf-2-4 \
+    libxkbcommon0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxi6 \
+    libxtst6 \
+    libxinerama1 \
+    libfontconfig1 \
+    libcurl4 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create a directory for the Unity server build
+WORKDIR /app
+
+# Copy the Unity dedicated server build into the image
+COPY build/ $UNITY_SERVER_BUILD_PATH
+
+
+# Copy the entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod 755 /app/entrypoint.sh
+
+# Set the entry point to the script
+ENTRYPOINT ["/app/entrypoint.sh"]
