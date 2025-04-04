@@ -97,3 +97,4 @@ desktop.ini
 
 # DB 관련
 postgres-data/
+vcpkg/
