@@ -1,13 +1,13 @@
 version: '3.8'
 
 services:
-  unity-server:
+  unity-server-test:
     build:
       context: .
       dockerfile: dockerfile
     image: smashup-server-image-test # Build the image once and reuse it
 
-  unity-server-1:
+  unity-server-1-test:
     image: smashup-server-image-test
     container_name: smashup-server-1-test
     network_mode: "host"
@@ -19,7 +19,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  unity-server-2:
+  unity-server-2-test:
     image: smashup-server-image-test
     container_name: smashup-server-2-test
     network_mode: "host"
