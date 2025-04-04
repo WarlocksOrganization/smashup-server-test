@@ -46,10 +46,9 @@ echo "매칭 서버 도커 컨테이너 실행 중..."
 sudo docker-compose down && sudo docker-compose up -d --build
 
 echo "미러 서버 컨테이너 실행 중..."
-cd /home/ubuntu/smashup-server/
+cd ../smashup-server/
 git pull
 sudo docker-compose down && sudo docker-compose up -d --build
 
 echo "도커 컨테이너 실행 완료"
-cd
-cd ./BackEnd_Doc/MatchingServer
+cd ../MatchingServer/
