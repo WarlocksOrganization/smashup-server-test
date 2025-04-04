@@ -47,7 +47,6 @@ sudo docker-compose down && sudo docker-compose up -d --build
 
 echo "미러 서버 컨테이너 실행 중..."
 cd ../smashup-server/
-git pull
 sudo docker-compose down && sudo docker-compose up -d --build
 
 echo "도커 컨테이너 실행 완료"

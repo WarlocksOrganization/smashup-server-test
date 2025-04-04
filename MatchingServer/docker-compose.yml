@@ -1,5 +1,5 @@
 services:
-  cpp-app:
+  cpp-app-test:
     build:
       context: .
       dockerfile: Dockerfile
@@ -15,12 +15,12 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
     depends_on:
-      - postgres
+      - postgres-test
     networks:
       - sockets-network-test
     restart: unless-stopped
   
-  postgres:
+  postgres-test:
     image: postgres:14
     container_name: postgres-db-test
     expose:

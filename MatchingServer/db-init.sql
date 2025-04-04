@@ -112,8 +112,8 @@ DO $$
 DECLARE
     i INTEGER;
 BEGIN
-    FOR i IN 0..9 LOOP
+    FOR i IN 0..1 LOOP
         INSERT INTO rooms (room_name, host_id, ip_address, port)
-        VALUES ('room' || i, 0, '127.0.0.1', 40000 + i);
+        VALUES ('room' || i, 0, '127.0.0.1', 40050 + i);
     END LOOP;
 END $$;
