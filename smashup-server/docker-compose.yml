@@ -12,7 +12,7 @@ services:
     container_name: smashup-server-1-test
     network_mode: "host"
     depends_on:
-      - unity-server
+      - unity-server-test
     ports:
       - "40050:40050/udp"
     command: ["-port=40050", "-socketServerIP=host.docker.internal", "-socketServerPort=8082", "-logServerIP=localhost", "-logServerPort=8081"]
@@ -24,7 +24,7 @@ services:
     container_name: smashup-server-2-test
     network_mode: "host"
     depends_on:
-      - unity-server
+      - unity-server-test
     ports:
       - "40051:40051/udp"
     command: ["-port=40051", "-socketServerIP=host.docker.internal", "-socketServerPort=8082", "-logServerIP=localhost", "-logServerPort=8081"]
