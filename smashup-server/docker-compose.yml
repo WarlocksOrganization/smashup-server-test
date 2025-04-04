@@ -9,7 +9,7 @@ services:
 
   unity-server-1:
     image: smashup-server-image-test
-    container_name: smashup-server-1
+    container_name: smashup-server-1-test
     network_mode: "host"
     depends_on:
       - unity-server
@@ -21,7 +21,7 @@ services:
 
   unity-server-2:
     image: smashup-server-image-test
-    container_name: smashup-server-2
+    container_name: smashup-server-2-test
     network_mode: "host"
     depends_on:
       - unity-server
