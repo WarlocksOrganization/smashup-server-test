@@ -29,6 +29,8 @@ namespace game_server {
         void setToken(const std::string& token);
         int getUserId();
         std::string getUserNickName();
+        void setStatus(const std:: string& status);
+        std::string getStatus();
         void write_broadcast(const std::string& response);
 
     private:
@@ -47,6 +49,7 @@ namespace game_server {
         int user_id_;
         std::string user_name_;
         std::string nick_name_;
+        std::string status_;
         Server* server_;
         std::chrono::steady_clock::time_point last_activity_time_;
         std::string token_;
