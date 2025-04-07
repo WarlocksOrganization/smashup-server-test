@@ -287,7 +287,6 @@ namespace game_server {
             for (const auto& obj : sessions_) {
                 auto session = obj.second.lock();
                 if (!session) continue;
-                if (session->getStatus() != "대기중") continue;
                 if (session->getUserId()) {
                     json userInfo;
                     userInfo["nickName"] = session->getUserNickName();
@@ -300,6 +299,7 @@ namespace game_server {
         
         std::string message = broadcast.dump();
         for (const auto& session : activeSessions) {
+            if (session->getStatus() != "대기중") continue;
             session->write_broadcast(message);
         }
     }
