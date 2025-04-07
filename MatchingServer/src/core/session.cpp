@@ -344,7 +344,7 @@ namespace game_server {
         }
     }
 
-    void Session::write_broadcast(const std::string& response, std::shared_ptr<Session> mirror) {
+    void Session::write_mirror(const std::string& response, std::shared_ptr<Session> mirror) {
         boost::asio::async_write(
             mirror->socket_,
             boost::asio::buffer(response),
@@ -355,6 +355,17 @@ namespace game_server {
                 }
                 else {
                     mirror->handle_error("응답 쓰기 오류: " + ec.message());
+                }
+            });
+    }
+
+    void Session::write_broadcast(const std::string& response) {
+        boost::asio::async_write(
+            this->socket_,
+            boost::asio::buffer(response),
+            [this](boost::system::error_code ec, std::size_t /*length*/) {
+                if (ec) {
+                    this->handle_error("동접자 수 받기 에러: " + ec.message());
                 }
             });
     }
@@ -403,7 +414,6 @@ namespace game_server {
             spdlog::error("방 퇴장 중 에러가 발생하였습니다. : {}", e.what());
         }
 
-        // ?뚯폆 由ъ냼???뺣━
         if (socket_.is_open()) {
             boost::system::error_code ec;
             socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
@@ -423,6 +433,10 @@ namespace game_server {
 
     int Session::getUserId() {
         return user_id_;
+    }
+
+    std::string Session::getUserNickName() {
+        return nick_name_;
     }
 
     void Session::setToken(const std::string& token) {

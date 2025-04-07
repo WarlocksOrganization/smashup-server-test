@@ -15,8 +15,12 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <nlohmann/json.hpp>
+#include <vector>
 
 namespace game_server {
+
+    using json = nlohmann::json;
 
     Server::Server(boost::asio::io_context& io_context,
         short port,
@@ -228,6 +232,30 @@ namespace game_server {
     int Server::getRoomCapacity() {
         std::lock_guard<std::mutex> lock(mirrors_mutex_);
         return mirrors_.size();
+    }
+
+    void Server::broadcastActiveUser() {
+        json broadcast;
+        broadcast["action"] = "CCUList";
+        broadcast["users"] = json::array();
+        std::vector<std::shared_ptr<Session>>  activeSessions;
+        {
+            std::lock_guard<std::mutex> lock(sessions_mutex_);
+            for (const auto& obj : sessions_) {
+                auto session = obj.second.lock();
+                if (!session) continue;
+                if (session->getUserId()) {
+                    std::string nickName = session->getUserNickName();
+                    broadcast["users"].push_back(nickName);
+                    activeSessions.push_back(session);
+                }
+            }
+        }
+        
+        std::string message = broadcast.dump();
+        for (const auto& session : activeSessions) {
+            session->write_broadcast(message);
+        }
     }
 
     void Server::init_controllers() {

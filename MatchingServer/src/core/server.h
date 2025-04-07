@@ -41,6 +41,7 @@ namespace game_server {
         void startSessionTimeoutCheck();
         bool checkAlreadyLogin(int userId);
         std::string getServerVersion();
+        void broadcastActiveUser();
     private:
         void do_accept();
         void init_controllers();
