@@ -23,8 +23,11 @@ namespace game_server {
             }
 
             // 영어, 한글, 숫자만 포함하는지 확인
-            for (unsigned char c : name) {
+            int len = name.size();
+            for (int i = 0; i < len; ++i) {
                 // ASCII 영어와 숫자 확인
+                const char& c = name[i];
+                if (i == len - 1 && c == '$') continue;
                 if ((c >= 'A' && c <= 'Z') ||
                     (c >= 'a' && c <= 'z') ||
                     (c >= '0' && c <= '9') ||

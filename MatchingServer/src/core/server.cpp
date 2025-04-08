@@ -54,8 +54,8 @@ namespace game_server {
         std::vector<std::string> tokens;
         {
             std::lock_guard<std::mutex> tokens_lock(tokens_mutex_);
-            for (const auto& user : users) {
-                int u = user;
+            for (const auto& user : users["users"]) {
+                int u = user.get<int>();
                 if (!tokens_.count(u)) continue;
                 tokens.push_back(tokens_[u]);
             }

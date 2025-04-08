@@ -96,20 +96,6 @@ namespace game_server {
                 for (const auto& res : inRoomUsers) {
                     response["users"].push_back(res[0].as<int>());
                 }
-                //pqxx::result res = txn.exec_params(
-                //    "UPDATE rooms "
-                //    "SET status = 'WAITING' "
-                //    "WHERE room_id = $1 "
-                //    "RETURNING room_id",
-                //    roomId);
-
-                //if (res.empty() || roomId != res[0][0].as<int>()) {
-                //    spdlog::error("방 ID: {}의 상태 업데이트 실패", roomId);
-                //    txn.abort();
-                //    dbPool_->return_connection(conn);
-                //    return -1;
-                //}
-                //spdlog::info("방 ID: {}의 상태가 완전히 업데이트되었습니다", roomId);
 
                 txn.commit();
                 dbPool_->return_connection(conn);
