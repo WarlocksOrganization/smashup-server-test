@@ -45,6 +45,7 @@ namespace game_server {
 
     void Session::handlePing() {
         last_activity_time_ = std::chrono::steady_clock::now();
+        spdlog::debug("유저 ID : {}로 부터 핑을 받음", user_id_);
 
         json response = {
             {"action", "refreshSession"},

@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
         // 로거 초기화
         auto console = spdlog::stdout_color_mt("console");
         spdlog::set_default_logger(console);
-        spdlog::set_level(spdlog::level::info);
+        spdlog::set_level(spdlog::level::debug);
 
         // 시그널 핸들러 등록
         std::signal(SIGINT, signal_handler);
