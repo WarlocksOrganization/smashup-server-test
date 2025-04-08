@@ -151,7 +151,7 @@ namespace game_server {
         broadcast_timer_.expires_after(broadcast_interval_);
         broadcast_timer_.async_wait([this](const boost::system::error_code & ec) {
             if (!ec) {
-                broadcastActiveUser();
+                broadcastCCU();
                 scheduleBroadcast();
             }
             else {
@@ -277,29 +277,65 @@ namespace game_server {
         return mirrors_.size();
     }
 
-    void Server::broadcastActiveUser() {
-        json broadcast;
-        broadcast["action"] = "CCUList";
-        broadcast["users"] = json::array();
-        std::vector<std::shared_ptr<Session>>  activeSessions;
+    std::vector<std::shared_ptr<Session>> Server::getWaitingSessions() {
+        std::vector<std::shared_ptr<Session>> waitingSessions;
+        std::lock_guard<std::mutex> lock(sessions_mutex_);
+        for (const auto& obj : sessions_) {
+            auto session = obj.second.lock();
+            if (!session || !session->getUserId()) continue;
+            if (session->getStatus() == "대기중") {
+                waitingSessions.push_back(session);
+            }
+        }
+        return waitingSessions;
+    }
+
+    void Server::broadcastCCU() {
+        json broadcast = {
+            {"action", "CCUList"},
+            {"users", json::array()}
+        };
+        std::vector<std::shared_ptr<Session>> waitingSessions;
         {
             std::lock_guard<std::mutex> lock(sessions_mutex_);
             for (const auto& obj : sessions_) {
                 auto session = obj.second.lock();
-                if (!session) continue;
-                if (session->getUserId()) {
-                    json userInfo;
-                    userInfo["nickName"] = session->getUserNickName();
-                    userInfo["status"] = session->getStatus();
-                    broadcast["users"].push_back(userInfo);
-                    activeSessions.push_back(session);
+                if (!session || !session->getUserId()) continue;
+
+                json userInfo;
+                userInfo["nickName"] = session->getUserNickName();
+                userInfo["status"] = session->getStatus();
+                broadcast["users"].push_back(userInfo);
+
+                if (session->getStatus() == "대기중") {
+                    waitingSessions.push_back(session);
                 }
             }
         }
-        
-        std::string message = broadcast.dump();
-        for (const auto& session : activeSessions) {
-            if (session->getStatus() != "대기중") continue;
+        broadcastActiveUser(broadcast.dump(), waitingSessions);
+    }
+
+    void Server::broadcastLogin(const std::string& nickName) {
+        json broadcast = {
+            {"action", "newLogin"},
+            {"nickName", nickName}
+        };
+        auto waitingSessions = getWaitingSessions();
+        broadcastActiveUser(broadcast.dump(), waitingSessions);
+    }
+
+    void Server::broadcastChat(const std::string& nickName, const std::string& message) {
+        json broadcast = {
+            {"action", "chat"},
+            {"nickName", nickName},
+            {"message", message}
+        };
+        auto waitingSessions = getWaitingSessions();
+        broadcastActiveUser(broadcast.dump(), waitingSessions);
+    }
+
+    void Server::broadcastActiveUser(const std::string& message, const std::vector<std::shared_ptr<Session>>& sessions) {
+        for (const auto& session : sessions) {
             session->write_broadcast(message);
         }
     }

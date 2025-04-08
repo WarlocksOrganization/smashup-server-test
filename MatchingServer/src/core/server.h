@@ -45,7 +45,11 @@ namespace game_server {
         void startBroadcastTimer();
         bool checkAlreadyLogin(int userId);
         std::string getServerVersion();
-        void broadcastActiveUser();
+        std::vector<std::shared_ptr<Session>> getWaitingSessions();
+        void broadcastCCU();
+        void broadcastLogin(const std::string& nickName);
+        void broadcastChat(const std::string& nickName, const std::string& message);
+        void broadcastActiveUser(const std::string& message, const std::vector<std::shared_ptr<Session>>& activeSessions);
         void setSessionStatus(const json& users, bool flag);
     private:
         void do_accept();
