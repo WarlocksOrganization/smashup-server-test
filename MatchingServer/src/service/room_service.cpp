@@ -135,6 +135,7 @@ namespace game_server {
 
                 // 성공 응답 생성
                 response["action"] = "joinRoom";
+                response["roomId"] = roomId;
                 response["status"] = "success";
                 response["message"] = "방에 성공적으로 참가했습니다";
 

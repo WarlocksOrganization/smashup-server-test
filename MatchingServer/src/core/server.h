@@ -9,10 +9,13 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <nlohmann/json.hpp>
 #include "../controller/controller.h"
 #include "../util/db_pool.h"
 
 namespace game_server {
+
+    using json = nlohmann::json;
 
     class Session;
 
@@ -39,12 +42,16 @@ namespace game_server {
         std::string generateSessionToken();
         void setSessionTimeout(std::chrono::seconds timeout);
         void startSessionTimeoutCheck();
+        void startBroadcastTimer();
         bool checkAlreadyLogin(int userId);
         std::string getServerVersion();
+        void broadcastActiveUser();
+        void setSessionStatus(const json& users, bool flag);
     private:
         void do_accept();
         void init_controllers();
         void check_inactive_sessions();
+        void scheduleBroadcast();
 
         boost::asio::io_context& io_context_;
         boost::asio::ip::tcp::acceptor acceptor_;
@@ -63,6 +70,10 @@ namespace game_server {
         std::chrono::seconds session_timeout_{ 12 }; // 기본 12초
         boost::asio::steady_timer session_check_timer_;
         bool timeout_check_running_{ false };
+
+        boost::asio::steady_timer broadcast_timer_;
+        bool broadcast_running_ = false;
+        const std::chrono::seconds broadcast_interval_ = std::chrono::seconds(3);
         
         // 버전 관리 데이터
         std::string version_;
