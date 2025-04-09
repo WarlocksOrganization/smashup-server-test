@@ -55,6 +55,7 @@ namespace game_server {
         std::string token_;
         bool is_mirror_ = false;
         int mirror_port_;
+        std::string remote_ip_;
     };
 
 } // namespace game_server

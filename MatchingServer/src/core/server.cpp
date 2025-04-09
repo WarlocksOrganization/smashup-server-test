@@ -433,8 +433,8 @@ namespace game_server {
     {
         acceptor_.async_accept(
             [this](boost::system::error_code ec, boost::asio::ip::tcp::socket socket) {
-                std::string ipAddress = socket.remote_endpoint().address().to_string();                
-                if (!ec && allowConnection(ipAddress)) {
+                //std::string ipAddress = socket.remote_endpoint().address().to_string();                
+                if (!ec/* && allowConnection(ipAddress)*/) {
                     // 세션 생성 및 시작
                     auto session = std::make_shared<Session>(std::move(socket), controllers_, this);
                     session->start();
@@ -443,9 +443,9 @@ namespace game_server {
                     if (ec) {
                         spdlog::error("클라이언트 연결을 받아 들이던 중 에러가 발생하였습니다. : {}", ec.message());
                     }
-                    else {
-                        spdlog::info("이미 연결된 IP({})로부터의 중복 접속이 차단되었습니다.", ipAddress);
-                    }
+                    //else {
+                    //    spdlog::info("이미 연결된 IP({})로부터의 중복 접속이 차단되었습니다.", ipAddress);
+                    //}
                 }
 
                 // 계속해서 연결 수락 (서버가 여전히 실행 중인 경우)
