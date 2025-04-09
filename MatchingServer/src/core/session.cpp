@@ -34,6 +34,7 @@ namespace game_server {
             if (!token_.empty()) {
                 server_->removeSession(token_, user_id_);
             }
+            server_->removeConnection(socket_.remote_endpoint().address().to_string());
         }
     }
 

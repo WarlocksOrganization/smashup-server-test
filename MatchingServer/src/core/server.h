@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 #include <mutex>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -51,6 +52,8 @@ namespace game_server {
         void broadcastChat(const std::string& nickName, const std::string& message);
         void broadcastActiveUser(const std::string& message, const std::vector<std::shared_ptr<Session>>& activeSessions);
         void setSessionStatus(const json& users, bool flag);
+        bool allowConnection(const std::string& ipAddress);
+        void removeConnection(const std::string& ipAddress);
     private:
         void do_accept();
         void init_controllers();
@@ -68,6 +71,8 @@ namespace game_server {
         std::mutex mirrors_mutex_;
         std::unordered_map<std::string, std::weak_ptr<Session>> sessions_;
         std::mutex sessions_mutex_;
+        std::unordered_set<std::string> connected_ips_;
+        std::mutex connected_ips_mutex_;
         std::unordered_map<int, std::string> tokens_;
         std::mutex tokens_mutex_;
         boost::uuids::random_generator uuid_generator_;

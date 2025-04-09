@@ -17,6 +17,7 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <nlohmann/json.hpp>
 #include <vector>
+#include <string>
 
 namespace game_server {
 
@@ -414,17 +415,37 @@ namespace game_server {
         spdlog::info("서버 중단");
     }
 
+    bool Server::allowConnection(const std::string& ipAddress) {
+        std::lock_guard<std::mutex> lock(connected_ips_mutex_);
+        if (connected_ips_.count(ipAddress)) {
+            return false;
+        }
+        connected_ips_.insert(ipAddress);
+        return true;
+    }
+
+    void Server::removeConnection(const std::string& ipAddress) {
+        std::lock_guard<std::mutex> lock(connected_ips_mutex_);
+        connected_ips_.erase(ipAddress);
+    }
+
     void Server::do_accept()
     {
         acceptor_.async_accept(
             [this](boost::system::error_code ec, boost::asio::ip::tcp::socket socket) {
-                if (!ec) {
+                std::string ipAddress = socket.remote_endpoint().address().to_string();                
+                if (!ec && allowConnection(ipAddress)) {
                     // 세션 생성 및 시작
                     auto session = std::make_shared<Session>(std::move(socket), controllers_, this);
                     session->start();
                 }
                 else {
-                    spdlog::error("클라이언트 연결을 받아 들이던 중 에러가 발생하였습니다. : {}", ec.message());
+                    if (ec) {
+                        spdlog::error("클라이언트 연결을 받아 들이던 중 에러가 발생하였습니다. : {}", ec.message());
+                    }
+                    else {
+                        spdlog::info("이미 연결된 IP({})로부터의 중복 접속이 차단되었습니다.", ipAddress);
+                    }
                 }
 
                 // 계속해서 연결 수락 (서버가 여전히 실행 중인 경우)
