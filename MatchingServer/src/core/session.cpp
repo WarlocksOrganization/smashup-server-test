@@ -347,6 +347,9 @@ namespace game_server {
                 else if (action == "gameEnd" && response["status"] == "success") {
                     server_->setSessionStatus(response, false);
                 }
+                else if (action == "updateNickName" && response["status"] == "success") {
+                    nick_name_ = response["nickName"];
+                }
 
                 spdlog::debug("클라이언트에 응답 전송 중");
                 write_response(response.dump());
