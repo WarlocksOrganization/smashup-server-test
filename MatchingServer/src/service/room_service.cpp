@@ -207,7 +207,7 @@ namespace game_server {
                     response["rooms"].push_back(room);
                 }
 
-                spdlog::info("{}개의 열린 방을 조회했습니다", response["rooms"].size());
+                spdlog::debug("{}개의 열린 방을 조회했습니다", response["rooms"].size());
             }
             catch (const std::exception& e) {
                 response["status"] = "error";
