@@ -19,8 +19,8 @@ namespace game_server {
         controllers_(controllers),
         user_id_(0),
         server_(server),
-        last_activity_time_(std::chrono::steady_clock::now())
-        //remote_ip_(socket_.remote_endpoint().address().to_string())
+        last_activity_time_(std::chrono::steady_clock::now()),
+        remote_ip_(socket_.remote_endpoint().address().to_string())
     {
         spdlog::info("새 세션이 생성되었습니다. 주소: {}:{}",
             socket_.remote_endpoint().address().to_string(),
@@ -36,7 +36,9 @@ namespace game_server {
             if (!token_.empty()) {
                 server_->removeSession(token_, user_id_);
             }
-            server_->removeConnection(remote_ip_);
+            if (!remote_ip_.empty()) {
+                server_->removeConnection(remote_ip_);
+            }
         }
     }
 
