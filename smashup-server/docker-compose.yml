@@ -6,6 +6,7 @@ services:
       context: .
       dockerfile: dockerfile
     image: smashup-server-image-test # Build the image once and reuse it
+    entrypoint: ["/bin/true"]
 
   unity-server-1-test:
     image: smashup-server-image-test
