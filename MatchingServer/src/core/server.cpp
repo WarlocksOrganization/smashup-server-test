@@ -433,37 +433,13 @@ namespace game_server {
     {
         acceptor_.async_accept(
             [this](boost::system::error_code ec, boost::asio::ip::tcp::socket socket) {
-                std::string ipAddress;
-
-                // 소켓으로부터 안전하게 IP 주소 얻기
-                try {
-                    ipAddress = socket.remote_endpoint().address().to_string();
-                }
-                catch (const boost::system::system_error& e) {
-                    spdlog::error("원격 엔드포인트 정보를 가져오는 중 예외 발생: {}", e.what());
-                    // 여기서 명시적으로 socket.close()를 호출할 필요 없음
-                    // 람다 함수가 종료되면 socket은 자동으로 소멸됨
-
-                    // 계속해서 다른 연결 수락
-                    if (running_) {
-                        do_accept();
-                    }
-                    return;
-                }
-
-                if (!ec && allowConnection(ipAddress)) {
+                if (!ec) {
                     // 세션 생성 및 시작
                     auto session = std::make_shared<Session>(std::move(socket), controllers_, this);
                     session->start();
                 }
                 else {
-                    if (ec) {
-                        spdlog::error("클라이언트 연결을 받아 들이던 중 에러가 발생하였습니다. : {}", ec.message());
-                    }
-                    else {
-                        spdlog::info("이미 연결된 IP({})로부터의 중복 접속이 차단되었습니다.", ipAddress);
-                    }
-                    // 여기서도 socket.close()를 명시적으로 호출할 필요 없음
+                    spdlog::error("클라이언트 연결을 받아 들이던 중 에러가 발생하였습니다. : {}", ec.message());
                 }
 
                 // 계속해서 연결 수락 (서버가 여전히 실행 중인 경우)

@@ -83,7 +83,7 @@ namespace game_server {
         auto self(shared_from_this());
         socket_.async_read_some(
             boost::asio::buffer(buffer_),
-            [this, self](boost::system::error_code ec, std::size_t length) {
+            [this, self](boost::system::error_code ec, std::size_t length) {                
                 if (!ec) {
                     try {
                         std::string data(buffer_.data(), length);
@@ -111,6 +111,15 @@ namespace game_server {
                             write_handshake_response(response.dump());
                         }
                         else {
+                            if (!server_->allowConnection(remote_ip_)) {
+                                json response = {
+                                    {"status", "error"},
+                                    {"message", "이미 접속 중인 IP입니다."}
+                                };
+                                write_handshake_response(response.dump());
+                                handle_error("다중 클라이언트 접속 감지 IP : " + remote_ip_);
+                            }
+
                             // 일반 클라이언트 세션 초기화
                             std::string serverVersion = server_->getServerVersion();
                             if (!handshake.contains("version") || serverVersion != handshake["version"].get<std::string>()) {
